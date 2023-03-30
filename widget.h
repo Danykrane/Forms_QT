@@ -18,4 +18,5 @@ public slots:
 
 };
 
+
 #endif // WIDGET_H

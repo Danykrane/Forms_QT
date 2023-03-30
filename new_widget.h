@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QtWidgets>
+#include <QMap>
 
 class New_widget : public QWidget
 {
@@ -12,6 +13,7 @@ private:
     quint16 col_elem;
     void createQtWidgets();
     void createQtConnections();
+//    void showData_map(const QMap<QPushButton*, int>&,const size_t &,void(New_widget::*)());
 
     //QPushButton* createButton(const QString&);
 
@@ -26,6 +28,7 @@ public:
 
 private slots:
     void buttonClicked();
+    void sendData();
 
 
 signals:

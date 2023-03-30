@@ -18,13 +18,18 @@ void New_widget::buttonClicked()
 
     // узнаю текст кнопки
     QPushButton* clicked_button = qobject_cast<QPushButton*>(sender());
-    QString rez_str = clicked_button->text() + " clicked!";
+    QString rez_str = "кнопка " + clicked_button->text() + " имеет значение: ";
 
-    // qDebug() <<rez_str;
+    //    if (buttonMap.values(buttonMap[clicked_button]))
+    //    qDebug() <<"Значение по ключу"<<buttonMap.value();
+    //rez_str = QString::number(buttonMap.values())
 
+    rez_str += QString::number(buttonMap[clicked_button]);
     // передаю на QLabel
     lbl->setText(rez_str);
 }
+
+
 
 void New_widget::createQtWidgets()
 {
@@ -56,6 +61,7 @@ void New_widget::createQtWidgets()
 
         buttonMap.insert(ptr, i); // убрал дублирование i + 1
 
+        // showData_map(ptr,buttonMap.begin() + i, &New_widget::sendData);
         row_layout->addWidget(ptr);
 
         // Добавление нового горизонтального layout с кнопками, если добавили 5

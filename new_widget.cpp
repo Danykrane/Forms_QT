@@ -13,9 +13,22 @@ New_widget::New_widget(quint16 col_elem)
     createQtWidgets();
 }
 
+void New_widget::buttonClicked()
+{
+
+    // узнаю текст кнопки
+    QPushButton* clicked_button = qobject_cast<QPushButton*>(sender());
+    QString rez_str = clicked_button->text() + " clicked!";
+
+    // qDebug() <<rez_str;
+
+    // передаю на QLabel
+    lbl->setText(rez_str);
+}
+
 void New_widget::createQtWidgets()
 {
-    QLabel* lbl = new QLabel(tr("0"));
+    lbl = new QLabel(tr("0"));
     lbl->setFixedHeight(lbl->fontMetrics().height() * 5);
 
     QLineEdit* display = new QLineEdit("0");
@@ -35,9 +48,12 @@ void New_widget::createQtWidgets()
     QHBoxLayout* row_layout = new QHBoxLayout(window);
     for (int i = 0; i < col_elem; ++i)
     {
-        QString num_elem
-            = QString::number(i + 1); // вынес как отдельную переменную
-        QPushButton* ptr = createButton(("Btn " + num_elem));
+        // вынес как отдельную переменную
+        QString num_elem = "Btn " + QString::number(i + 1);
+
+        // создаем кнопку и обрабатываем сигнал на слоте buttonClicked()
+        QPushButton* ptr = createButton(num_elem, &New_widget::buttonClicked);
+
         buttonMap.insert(ptr, i); // убрал дублирование i + 1
 
         row_layout->addWidget(ptr);
@@ -67,9 +83,18 @@ void New_widget::createQtWidgets()
     setWindowTitle(tr("test"));
 }
 
-QPushButton* New_widget::createButton(const QString& text)
+// QPushButton* New_widget::createButton(const QString& text)
+//{
+//     QPushButton* button = new QPushButton(text);
+
+//    return button;
+//}
+
+QPushButton* New_widget::createButton(const QString& text,
+                                      void (New_widget::*slot)())
 {
     QPushButton* button = new QPushButton(text);
-
+    connect(button, &QPushButton::clicked, this, slot);
+    // connect(button, SIGNAL(clicked()), this, slot_ic);
     return button;
 }

@@ -1,16 +1,31 @@
 #include "new_widget.h"
 
-New_widget::New_widget(QWidget* parent)
-    : QWidget(parent)
+void printQObjectTree(QObject* root, size_t coltab = 0)
 {
-    createQtWidgets();
+    QString tabs;
+    tabs.fill('\t', coltab);
+    qDebug().noquote() << tabs << root;
+    // QObject next = (root->children());
+    for (auto& it : root->children())
+    {
+        printQObjectTree(it, coltab + 1);
+    }
 }
 
+// New_widget::New_widget(QWidget* parent)
+//     : QWidget(parent)
+//{
+//     createQtWidgets();
+// }
+
 // конструктор для одного аргумента (кол-ва кнопок)
-New_widget::New_widget(quint16 col_elem)
-    : col_elem(col_elem)
+New_widget::New_widget(quint16 col_elem, QWidget* parent)
+    : QWidget(parent)
+    , col_elem(col_elem)
 {
+    setObjectName("MainWidget");
     createQtWidgets();
+    printQObjectTree(this);
 }
 
 void New_widget::buttonClicked()
@@ -22,15 +37,13 @@ void New_widget::buttonClicked()
 
     //    if (buttonMap.values(buttonMap[clicked_button]))
     //    qDebug() <<"Значение по ключу"<<buttonMap.value();
-    //rez_str = QString::number(buttonMap.values())
+    // rez_str = QString::number(buttonMap.values())
 
     rez_str += QString::number(buttonMap[clicked_button]);
     // передаю на QLabel
     lbl->setText(rez_str);
 }
-
-
-
+const int KR = 5;
 void New_widget::createQtWidgets()
 {
     lbl = new QLabel(tr("0"));
@@ -46,34 +59,57 @@ void New_widget::createQtWidgets()
     font.setPointSize(font.pointSize() + 8);
     display->setFont(font);
 
-    QWidget* window = new QWidget;
-
     // создаем группу вертикальных кнопок
-    QVBoxLayout* col_layout = new QVBoxLayout(window);
-    QHBoxLayout* row_layout = new QHBoxLayout(window);
-    for (int i = 0; i < col_elem; ++i)
+    QVBoxLayout* col_layout = new QVBoxLayout(this);
+    QHBoxLayout* row_layout;
+    QWidget* hWidget;
+    int ind = 0;
+    int col_ost = col_elem % KR;
+    int col_str = (col_elem - col_ost) / KR;
+    bool flag = false;
+    if (col_ost)
     {
-        // вынес как отдельную переменную
-        QString num_elem = "Btn " + QString::number(i + 1);
+        col_str++;
+        flag = true;
+    }
+    for (int j = 0; j < col_str; j++)
+    {
 
-        // создаем кнопку и обрабатываем сигнал на слоте buttonClicked()
-        QPushButton* ptr = createButton(num_elem, &New_widget::buttonClicked);
+        hWidget = new QWidget;
+        hWidget->setObjectName("Hwid" + QString::number(ind));
+        row_layout = new QHBoxLayout(hWidget);
+        row_layout->setContentsMargins(0, 0, 0, 0);
+        col_layout->addWidget(hWidget,1);
 
-        buttonMap.insert(ptr, i); // убрал дублирование i + 1
+        int cols = KR;
 
-        // showData_map(ptr,buttonMap.begin() + i, &New_widget::sendData);
-        row_layout->addWidget(ptr);
-
-        // Добавление нового горизонтального layout с кнопками, если добавили 5
-        // кнопок
-        if ((i + 1) % 5 == 0)
+        if (col_elem - KR * j < KR)
         {
-            col_layout->addLayout(row_layout);
-            row_layout = new QHBoxLayout;
+            cols = col_ost;
+        }
+        for (int i = 0; i < cols; ++i)
+        {
+
+            QString num_elem = "Btn " + QString::number(++ind);
+            QPushButton* ptr
+                = createButton(num_elem, &New_widget::buttonClicked);
+            ptr->setObjectName(num_elem);
+
+            buttonMap.insert(ptr, ind); // убрал дублирование i + 1
+            if (flag)
+            {
+                row_layout->addWidget(ptr,1, Qt::AlignLeft);
+            }
+            else
+            {
+                row_layout->addWidget(ptr);
+            }
+        }
+        if (flag){
+            row_layout->addStretch(KR-col_ost);
         }
     }
 
-    // Если кнопок не кратно 5
     if (row_layout->count() > 0)
     {
         col_layout->addLayout(row_layout);
@@ -82,8 +118,6 @@ void New_widget::createQtWidgets()
     col_layout->addStretch(5);
     col_layout->addWidget(lbl, 0, Qt::AlignBottom | Qt::AlignHCenter);
     col_layout->addStretch(1);
-
-    setLayout(col_layout);
 
     // по строке
     setWindowTitle(tr("test"));

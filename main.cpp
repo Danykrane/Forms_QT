@@ -15,26 +15,8 @@ int main(int argc, char** argv)
     //    funcPtr(123);
 
     QApplication app(argc, argv);
-    New_widget wid(26);
+    New_widget wid(54);
     wid.show();
-
-
-
-
-    //    QObject::connect(&cmd, SIGNAL(clicked()),
-    //                     &counter, SLOT(slotInc())
-    //
-    //    );
-
-    //    QObject::connect(&cmd, &QPushButton::clicked, &counter,
-    //    &Counter::slotInc);
-
-    //    QObject::connect(&counter,
-    //                     &Counter::counterChanged,
-    //                     &lbl,
-    //                     func);
-
-    //    QObject::connect(&counter, SIGNAL(goodbye()), &app, SLOT(quit()));
 
     return app.exec();
 }
